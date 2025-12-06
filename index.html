@@ -1,243 +1,189 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AYCE Timer 90 Menit</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      min-height: 100vh;
-      margin: 0;
-      padding: 15px;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .card {
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(14px);
-      border-radius: 20px;
-      padding: 28px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+      background: #f4f4f4;
+      color: #333;
       text-align: center;
+      padding: 20px;
     }
 
     h1 {
-      margin-bottom: 20px;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 1px;
+      font-size: 28px;
+      margin-bottom: 10px;
     }
 
-    .info {
-      background: rgba(255,255,255,0.08);
-      padding: 15px;
-      border-radius: 14px;
-      margin-bottom: 20px;
+    .info-box {
+      background: #fff;
+      padding: 20px;
+      margin: 0 auto 20px;
+      max-width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
-    .info p {
-      margin: 6px 0;
-      font-size: 15px;
-      opacity: 0.9;
+    .info-box p {
+      margin: 10px 0;
+      font-size: 18px;
     }
 
-    .timer {
-      font-size: 52px;
+    .countdown {
+      font-size: 48px;
+      margin-top: 10px;
       font-weight: bold;
-      margin: 18px 0;
-      color: #f87171;
-      letter-spacing: 2px;
+      color: #e53935;
     }
 
-    .progress-container {
+    #progress-container {
       width: 100%;
-      background: rgba(255,255,255,0.2);
-      height: 16px;
+      background-color: #ddd;
+      height: 20px;
       border-radius: 10px;
       overflow: hidden;
+      margin-top: 20px;
     }
 
-    .progress-bar {
+    #progress-bar {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #22c55e, #86efac);
+      background-color: #4caf50;
       transition: width 1s linear;
     }
 
-    .loading {
-      margin-top: 20px;
-      font-size: 14px;
-      opacity: 0.8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .spinner {
-      width: 16px;
-      height: 16px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-top: 3px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      100% {transform: rotate(360deg);}
-    }
-
-    .popup {
+    #popup {
       position: fixed;
       top: 30%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #facc15;
-      color: #111;
-      padding: 22px 30px;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: bold;
+      background: #ffeb3b;
+      padding: 25px 30px;
+      font-size: 18px;
+      border: 2px solid #f44336;
+      border-radius: 8px;
+      z-index: 9999;
       display: none;
-      z-index: 999;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-      animation: zoom 0.3s ease;
-    }
-
-    @keyframes zoom {
-      from {transform: scale(0.8) translate(-50%,-50%);}
-      to {transform: scale(1) translate(-50%,-50%);}
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h1> Timer Ayce</h1>
+  <h1>AYCE Timer</h1>
 
-    <div class="info">
-      <p><b>Meja</b> : <span id="meja">-</span></p>
-      <p><b>Nama</b> : <span id="nama">-</span></p>
-      <p><b>Mulai</b> : <span id="mulai">-</span></p>
-      <p><b>Selesai</b> : <span id="selesai">-</span></p>
-    </div>
+  <div class="info-box">
+    <p><strong>Cabang:</strong> <span id="cabang"></span></p>
+    <p><strong>Nomor Meja:</strong> <span id="meja"></span></p>
+    <p><strong>Nama:</strong> <span id="nama"></span></p>
+    <p><strong>Waktu Mulai:</strong> <span id="waktuMulai"></span></p>
+    <p><strong>Waktu Selesai:</strong> <span id="waktuSelesai"></span></p>
 
-    <div class="timer" id="timer">00:00:00</div>
+    <div class="countdown" id="timer">00:00:00</div>
 
-    <div class="progress-container">
-      <div class="progress-bar" id="progress"></div>
-    </div>
-
-    <div class="loading" id="loading">
-      <div class="spinner"></div> Menghubungkan ke server...
+    <div id="progress-container">
+      <div id="progress-bar"></div>
     </div>
   </div>
 
-  <div class="popup" id="popup">⚠️ 5 MENIT MENUJU HABIS!</div>
+  <div id="popup">⚠️ Waktu tersisa 5 menit!</div>
 
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
   <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAEd0SYvg7_l9tVNYA4v3HkU0D05Eqt8Dc",
-    authDomain: "aycetimerpesonamusi.firebaseapp.com",
-    databaseURL: "https://aycetimerpesonamusi-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "aycetimerpesonamusi",
-    storageBucket: "aycetimerpesonamusi.appspot.com",
-    messagingSenderId: "760279479394",
-    appId: "1:760279479394:web:5d96ea3c05e58ce059cbcb"
-  };
+    // ================= FIREBASE CONFIG =================
+    const firebaseConfig = {
+      apiKey: "AIzaSyAEd0SYvg7_l9tVNYA4v3HkU0D05Eqt8Dc",
+      authDomain: "aycetimerpesonamusi.firebaseapp.com",
+      databaseURL: "https://aycetimerpesonamusi-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "aycetimerpesonamusi",
+      storageBucket: "aycetimerpesonamusi.appspot.com",
+      messagingSenderId: "760279479394",
+      appId: "1:760279479394:web:5d96ea3c05e58ce059cbcb"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  function param(name) {
-    return new URLSearchParams(window.location.search).get(name);
-  }
+    // ================= AMBIL PARAM URL =================
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
 
-  let timerInterval = null;
+    const table  = getQueryParam("table");
+    const cabang = getQueryParam("cabang");
 
-  function playSound() {
-    new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg").play().catch(()=>{});
-  }
+    document.getElementById("meja").textContent   = table || "-";
+    document.getElementById("cabang").textContent = cabang || "-";
 
-  function showPopup() {
-    const p = document.getElementById("popup");
-    p.style.display = "block";
-    playSound();
-    setTimeout(() => p.style.display = "none", 6000);
-  }
+    // ================= POPUP & SOUND =================
+    function showPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "block";
+      playSound();
+      setTimeout(() => popup.style.display = "none", 6000);
+    }
 
-  function startTimer(selesaiStr) {
-    if (timerInterval) clearInterval(timerInterval);
+    function playSound() {
+      const audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
+      audio.play().catch(() => {});
+    }
 
-    const end = new Date(selesaiStr).getTime();
-    const total = 90 * 60;
+    // ================= TIMER =================
+    function startTimer(waktuSelesai) {
+      const totalDuration = 90 * 60; // 90 menit
+      const end = new Date(waktuSelesai.replace(" ", "T")).getTime();
 
-    timerInterval = setInterval(() => {
-      const now = Date.now();
-      const diff = Math.floor((end - now) / 1000);
+      const timerInterval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = end - now;
+        const seconds = Math.floor(distance / 1000);
 
-      if (diff <= 0) {
-        document.getElementById("timer").textContent = "00:00:00";
-        document.getElementById("progress").style.width = "100%";
-        clearInterval(timerInterval);
-        return;
-      }
+        const progress = Math.max(0, Math.min(1, 1 - seconds / totalDuration));
+        document.getElementById("progress-bar").style.width = (progress * 100) + "%";
 
-      const h = String(Math.floor(diff / 3600)).padStart(2,"0");
-      const m = String(Math.floor(diff % 3600 / 60)).padStart(2,"0");
-      const s = String(diff % 60).padStart(2,"0");
+        if (seconds <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById("timer").textContent = "00:00:00";
+          document.getElementById("progress-bar").style.width = "100%";
+          return;
+        }
 
-      document.getElementById("timer").textContent = `${h}:${m}:${s}`;
+        const hrs  = String(Math.floor(seconds / 3600)).padStart(2, "0");
+        const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+        const secs = String(seconds % 60).padStart(2, "0");
 
-      const used = total - diff;
-      const persen = Math.min(100, (used / total) * 100);
-      document.getElementById("progress").style.width = persen + "%";
+        document.getElementById("timer").textContent = `${hrs}:${mins}:${secs}`;
 
-      if (diff <= 300 && diff > 294) showPopup();
+        if (seconds <= 300 && seconds > 294) {
+          showPopup();
+        }
 
-    }, 1000);
-  }
+      }, 1000);
+    }
 
-  const meja = param("table");
-  const cabang = param("cabang");
-
-  if (!meja || !cabang) {
-    alert("QR tidak valid!");
-  } else {
-    document.getElementById("meja").textContent = meja;
-
-    const ref = db.ref(`cabang/${cabang}/meja/${meja}`);
-
-    ref.on("value", snap => {
-      if (!snap.exists()) {
-        document.getElementById("loading").textContent = "Data belum tersedia...";
-        return;
-      }
-
-      const data = snap.val();
-      document.getElementById("loading").style.display = "none";
-
-      document.getElementById("nama").textContent = data.nama || "-";
-      document.getElementById("mulai").textContent = data.mulai || "-";
-      document.getElementById("selesai").textContent = data.selesai || "-";
-
-      if (data.selesai) startTimer(data.selesai);
-    });
-  }
-</script>
-
-
+    // ================= AMBIL DATA SESUAI PYTHON =================
+    if (table && cabang) {
+      firebase.database()
+        .ref(`cabang/${cabang}/meja/${table}`)
+        .on("value", (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            document.getElementById("nama").textContent        = data.nama   || "-";
+            document.getElementById("waktuMulai").textContent = data.mulai  || "-";
+            document.getElementById("waktuSelesai").textContent = data.selesai || "-";
+            startTimer(data.selesai);
+          }
+        });
+    } else {
+      alert("URL harus mengandung ?table=...&cabang=...");
+    }
+  </script>
 
 </body>
 </html>
